@@ -1,8 +1,9 @@
-# Personal Career Agent
+# Daily Career Briefing
 
-## Status
+Generated: 2026-09-12T07:24:54.484526+00:00
 
-The agent has not completed its first run yet.
+Jobs available: 0
 
-Once GitHub Actions runs the agent, this file will
-contain the latest career briefing.
+No jobs have been collected yet.
+
+The OpenClaw job-search pipeline will populate this data.
