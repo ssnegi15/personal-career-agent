@@ -136,7 +136,7 @@ jobs:
           openclaw agent exec \
             --isolated \
             --auth-env-only \
-            --model z-ai/glm-5.3-flash:free \
+            --model openrouter/z-ai/glm-5.3-flash:free
             --message-file "$RUNNER_TEMP/career-task.md" \
             --cwd "$GITHUB_WORKSPACE" \
             --timeout 1200 \
