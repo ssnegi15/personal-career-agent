@@ -2,24 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Personal Career Agent</title>
 
   <style>
     :root {
-      --bg: #0f172a;
+      --bg: #0b1120;
       --panel: #111827;
-      --panel-light: #1f2937;
-      --border: #334155;
+      --panel2: #172033;
+      --border: #263449;
       --text: #f8fafc;
       --muted: #94a3b8;
-      --green: #22c55e;
       --blue: #60a5fa;
+      --blue-dark: #2563eb;
+      --green: #22c55e;
       --yellow: #facc15;
       --red: #f87171;
     }
@@ -51,13 +48,13 @@
     }
 
     .container {
-      width: min(1200px, 94%);
-      margin: 0 auto;
+      width: min(1250px, 94%);
+      margin: auto;
       padding: 32px 0 60px;
     }
 
     header {
-      margin-bottom: 30px;
+      margin-bottom: 28px;
     }
 
     h1 {
@@ -66,23 +63,25 @@
     }
 
     h2 {
-      margin-top: 0;
+      margin: 0 0 18px;
+      font-size: 23px;
     }
 
     .subtitle {
-      color: var(--muted);
       margin: 0;
+      color: var(--muted);
     }
+
+    /* ================================
+       STATS
+       ================================ */
 
     .stats {
       display: grid;
       grid-template-columns:
-        repeat(
-          auto-fit,
-          minmax(180px, 1fr)
-        );
+        repeat(auto-fit, minmax(180px, 1fr));
 
-      gap: 16px;
+      gap: 15px;
       margin-bottom: 30px;
     }
 
@@ -101,12 +100,50 @@
 
     .stat-label {
       color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* ================================
+       CONTROLS
+       ================================ */
+
+    .controls {
+      display: grid;
+      grid-template-columns:
+        minmax(220px, 2fr)
+        minmax(150px, 1fr)
+        minmax(150px, 1fr);
+
+      gap: 12px;
+
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+
+      padding: 15px;
+      margin-bottom: 22px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      background: var(--panel2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 12px;
       font-size: 14px;
     }
 
-    section {
-      margin-bottom: 35px;
+    input:focus,
+    select:focus {
+      outline: 2px solid var(--blue-dark);
+      border-color: var(--blue);
     }
+
+    /* ================================
+       JOBS
+       ================================ */
 
     .job {
       background: var(--panel);
@@ -116,11 +153,15 @@
       margin-bottom: 14px;
     }
 
+    .job:hover {
+      border-color: #3b82f6;
+    }
+
     .job-header {
       display: flex;
       justify-content: space-between;
-      gap: 20px;
       align-items: flex-start;
+      gap: 20px;
     }
 
     .job-title {
@@ -131,16 +172,27 @@
 
     .company {
       color: var(--muted);
+      font-size: 15px;
     }
 
     .score {
-      min-width: 65px;
+      min-width: 72px;
       text-align: center;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-weight: 700;
       background: #14532d;
       color: #bbf7d0;
-      border-radius: 8px;
-      padding: 7px 10px;
-      font-weight: 700;
+    }
+
+    .score.medium {
+      background: #713f12;
+      color: #fef08a;
+    }
+
+    .score.low {
+      background: #450a0a;
+      color: #fecaca;
     }
 
     .job-meta {
@@ -151,7 +203,7 @@
     }
 
     .tag {
-      background: var(--panel-light);
+      background: var(--panel2);
       border: 1px solid var(--border);
       color: #cbd5e1;
       border-radius: 6px;
@@ -162,12 +214,18 @@
     .description {
       color: #cbd5e1;
       line-height: 1.6;
-      margin-bottom: 15px;
+      margin-bottom: 17px;
+    }
+
+    .job-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .job-link {
       display: inline-block;
-      background: #2563eb;
+      background: var(--blue-dark);
       color: white;
       padding: 9px 14px;
       border-radius: 7px;
@@ -179,16 +237,30 @@
       text-decoration: none;
     }
 
+    .result-count {
+      color: var(--muted);
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+
+    /* ================================
+       REPORT
+       ================================ */
+
     .report {
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 25px;
+      padding: 24px;
       line-height: 1.7;
       white-space: pre-wrap;
       color: #dbeafe;
       overflow-x: auto;
     }
+
+    /* ================================
+       STATES
+       ================================ */
 
     .empty {
       background: var(--panel);
@@ -215,9 +287,14 @@
       padding-top: 20px;
       color: var(--muted);
       font-size: 13px;
+      margin-top: 40px;
     }
 
-    @media (max-width: 650px) {
+    @media (max-width: 750px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
       .job-header {
         flex-direction: column;
       }
@@ -227,7 +304,7 @@
       }
 
       h1 {
-        font-size: 26px;
+        font-size: 27px;
       }
     }
   </style>
@@ -235,354 +312,549 @@
 
 <body>
 
-  <main class="container">
+<main class="container">
 
-    <header>
-      <h1>Personal Career Agent</h1>
+  <header>
+    <h1>Personal Career Agent</h1>
 
-      <p class="subtitle">
-        Autonomous job discovery, analysis and interview preparation
-      </p>
-    </header>
-
-
-    <!-- ============================================
-         STATS
-         ============================================ -->
-
-    <div class="stats">
-
-      <div class="stat">
-        <div
-          class="stat-number"
-          id="jobCount"
-        >
-          -
-        </div>
-
-        <div class="stat-label">
-          Jobs discovered
-        </div>
-      </div>
+    <p class="subtitle">
+      Autonomous job discovery, analysis and interview preparation
+    </p>
+  </header>
 
 
-      <div class="stat">
-        <div
-          class="stat-number"
-          id="remoteCount"
-        >
-          -
-        </div>
+  <!-- ============================================
+       STATS
+       ============================================ -->
 
-        <div class="stat-label">
-          Remote jobs
-        </div>
-      </div>
+  <div class="stats">
+
+    <div class="stat">
+      <div class="stat-number" id="jobCount">-</div>
+      <div class="stat-label">Jobs discovered</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-number" id="remoteCount">-</div>
+      <div class="stat-label">Remote jobs</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-number" id="topScore">-</div>
+      <div class="stat-label">Highest match</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-number" id="updated">-</div>
+      <div class="stat-label">Latest discovery</div>
+    </div>
+
+  </div>
 
 
-      <div class="stat">
-        <div
-          class="stat-number"
-          id="topScore"
-        >
-          -
-        </div>
+  <!-- ============================================
+       JOB SECTION
+       ============================================ -->
 
-        <div class="stat-label">
-          Highest match
-        </div>
-      </div>
+  <section>
 
+    <h2>Job Opportunities</h2>
 
-      <div class="stat">
-        <div
-          class="stat-number"
-          id="updated"
-        >
-          -
-        </div>
+    <div class="controls">
 
-        <div class="stat-label">
-          Last update
-        </div>
-      </div>
+      <input
+        id="search"
+        type="search"
+        placeholder="Search title, company, skills..."
+      >
+
+      <select id="remoteFilter">
+        <option value="all">All locations</option>
+        <option value="remote">Remote only</option>
+        <option value="india">India</option>
+      </select>
+
+      <select id="sort">
+        <option value="score">Highest match</option>
+        <option value="newest">Newest</option>
+        <option value="title">Title</option>
+        <option value="company">Company</option>
+      </select>
 
     </div>
 
+    <div
+      id="resultCount"
+      class="result-count"
+    >
+      Loading...
+    </div>
 
-    <!-- ============================================
-         JOBS
-         ============================================ -->
+    <div
+      id="jobs"
+      class="loading"
+    >
+      Loading jobs...
+    </div>
 
-    <section>
-
-      <h2>
-        Top Job Opportunities
-      </h2>
-
-      <div
-        id="jobs"
-        class="loading"
-      >
-        Loading jobs...
-      </div>
-
-    </section>
+  </section>
 
 
-    <!-- ============================================
-         REPORT
-         ============================================ -->
+  <!-- ============================================
+       DAILY REPORT
+       ============================================ -->
 
-    <section>
+  <section>
 
-      <h2>
-        Daily Career Briefing
-      </h2>
+    <h2>Daily Career Briefing</h2>
 
-      <div
-        id="report"
-        class="report"
-      >
-        Loading report...
-      </div>
+    <div
+      id="report"
+      class="report"
+    >
+      Loading report...
+    </div>
 
-    </section>
+  </section>
 
 
-    <footer>
-      Personal Career Agent · GitHub Actions · OpenClaw
-    </footer>
+  <footer>
+    Personal Career Agent · GitHub Actions · OpenClaw
+  </footer>
 
-  </main>
+</main>
 
 
-  <script>
+<script>
 
-    // =================================================
-    // Utility
-    // =================================================
+  let allJobs = [];
 
-    function escapeHtml(value) {
 
-      if (value === null || value === undefined) {
-        return "";
-      }
+  // =================================================
+  // SECURITY
+  // =================================================
 
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+  function escapeHtml(value) {
+
+    if (
+      value === null ||
+      value === undefined
+    ) {
+      return "";
     }
 
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
 
-    // =================================================
-    // Load jobs.json
-    // =================================================
 
-    async function loadJobs() {
+  // =================================================
+  // LOAD JOBS
+  // =================================================
 
-      const container =
-        document.getElementById("jobs");
+  async function loadJobs() {
 
-      try {
+    const container =
+      document.getElementById("jobs");
 
-        const response = await fetch(
-          "./data/jobs.json?" + Date.now()
+    try {
+
+      const response = await fetch(
+        "./data/jobs.json?" + Date.now()
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          "Unable to load jobs.json"
         );
-
-        if (!response.ok) {
-          throw new Error(
-            "Unable to load jobs.json"
-          );
-        }
-
-        const jobs = await response.json();
-
-        if (!Array.isArray(jobs)) {
-          throw new Error(
-            "jobs.json does not contain a list"
-          );
-        }
-
-        renderJobs(jobs);
-
-      } catch (error) {
-
-        container.innerHTML =
-          `<div class="error">
-            Could not load jobs.json:
-            ${escapeHtml(error.message)}
-          </div>`;
-
-      }
-    }
-
-
-    // =================================================
-    // Render jobs
-    // =================================================
-
-    function renderJobs(jobs) {
-
-      const container =
-        document.getElementById("jobs");
-
-      const jobCount =
-        document.getElementById("jobCount");
-
-      const remoteCount =
-        document.getElementById("remoteCount");
-
-      const topScore =
-        document.getElementById("topScore");
-
-      jobCount.textContent =
-        jobs.length;
-
-
-      const remoteJobs =
-        jobs.filter(
-          job =>
-            String(
-              job.remote_status || ""
-            ).toLowerCase() === "remote"
-        );
-
-      remoteCount.textContent =
-        remoteJobs.length;
-
-
-      const scores =
-        jobs
-          .map(
-            job =>
-              Number(
-                job.relevance_score || 0
-              )
-          )
-          .filter(
-            score => !Number.isNaN(score)
-          );
-
-
-      topScore.textContent =
-        scores.length
-          ? Math.max(...scores)
-          : "0";
-
-
-      if (jobs.length === 0) {
-
-        container.innerHTML =
-          `<div class="empty">
-            No jobs have been discovered yet.
-          </div>`;
-
-        return;
       }
 
+      const jobs =
+        await response.json();
+
+      if (!Array.isArray(jobs)) {
+        throw new Error(
+          "jobs.json does not contain a list"
+        );
+      }
+
+      allJobs = jobs;
+
+      updateStats();
+
+      renderJobs();
+
+      updateDate();
+
+    } catch (error) {
 
       container.innerHTML =
-        jobs
-          .slice(0, 50)
-          .map(
-            job => {
-
-              const title =
-                escapeHtml(
-                  job.title || "Untitled role"
-                );
-
-              const company =
-                escapeHtml(
-                  job.company || "Unknown company"
-                );
-
-              const location =
-                escapeHtml(
-                  job.location || "Unknown location"
-                );
-
-              const remote =
-                escapeHtml(
-                  job.remote_status || "unknown"
-                );
-
-              const source =
-                escapeHtml(
-                  job.source || "unknown"
-                );
-
-              const score =
-                Number(
-                  job.relevance_score || 0
-                );
-
-              const description =
-                escapeHtml(
-                  job.description || ""
-                );
-
-              const url =
-                escapeHtml(
-                  job.url || "#"
-                );
+        `<div class="error">
+          Could not load jobs.json:
+          ${escapeHtml(error.message)}
+        </div>`;
+    }
+  }
 
 
-              return `
-                <article class="job">
+  // =================================================
+  // UPDATE STATS
+  // =================================================
 
-                  <div class="job-header">
+  function updateStats() {
 
-                    <div>
+    const jobCount =
+      document.getElementById("jobCount");
 
-                      <div class="job-title">
-                        ${title}
-                      </div>
+    const remoteCount =
+      document.getElementById("remoteCount");
 
-                      <div class="company">
-                        ${company}
-                      </div>
+    const topScore =
+      document.getElementById("topScore");
 
+
+    jobCount.textContent =
+      allJobs.length;
+
+
+    const remoteJobs =
+      allJobs.filter(
+        job =>
+          String(
+            job.remote_status || ""
+          ).toLowerCase() === "remote"
+      );
+
+    remoteCount.textContent =
+      remoteJobs.length;
+
+
+    const scores =
+      allJobs
+        .map(
+          job =>
+            Number(
+              job.relevance_score || 0
+            )
+        )
+        .filter(
+          score =>
+            !Number.isNaN(score)
+        );
+
+
+    topScore.textContent =
+      scores.length
+        ? Math.max(...scores)
+        : "0";
+  }
+
+
+  // =================================================
+  // FILTER + SORT
+  // =================================================
+
+  function getFilteredJobs() {
+
+    const search =
+      document
+        .getElementById("search")
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    const remoteFilter =
+      document
+        .getElementById("remoteFilter")
+        .value;
+
+
+    const sort =
+      document
+        .getElementById("sort")
+        .value;
+
+
+    let jobs =
+      allJobs.filter(
+        job => {
+
+          const searchable =
+            [
+              job.title,
+              job.company,
+              job.location,
+              job.description
+            ]
+              .join(" ")
+              .toLowerCase();
+
+
+          if (
+            search &&
+            !searchable.includes(search)
+          ) {
+            return false;
+          }
+
+
+          const location =
+            String(
+              job.location || ""
+            ).toLowerCase();
+
+
+          const remoteStatus =
+            String(
+              job.remote_status || ""
+            ).toLowerCase();
+
+
+          if (
+            remoteFilter === "remote" &&
+            remoteStatus !== "remote"
+          ) {
+            return false;
+          }
+
+
+          if (
+            remoteFilter === "india" &&
+            !location.includes("india")
+          ) {
+            return false;
+          }
+
+
+          return true;
+        }
+      );
+
+
+    jobs.sort(
+      (a, b) => {
+
+        if (sort === "score") {
+
+          return (
+            Number(
+              b.relevance_score || 0
+            ) -
+            Number(
+              a.relevance_score || 0
+            )
+          );
+        }
+
+
+        if (sort === "newest") {
+
+          return (
+            new Date(
+              b.discovered_at || 0
+            ) -
+            new Date(
+              a.discovered_at || 0
+            )
+          );
+        }
+
+
+        if (sort === "title") {
+
+          return String(
+            a.title || ""
+          ).localeCompare(
+            String(
+              b.title || ""
+            )
+          );
+        }
+
+
+        if (sort === "company") {
+
+          return String(
+            a.company || ""
+          ).localeCompare(
+            String(
+              b.company || ""
+            )
+          );
+        }
+
+
+        return 0;
+      }
+    );
+
+
+    return jobs;
+  }
+
+
+  // =================================================
+  // RENDER JOBS
+  // =================================================
+
+  function renderJobs() {
+
+    const container =
+      document.getElementById("jobs");
+
+    const resultCount =
+      document.getElementById("resultCount");
+
+
+    const jobs =
+      getFilteredJobs();
+
+
+    resultCount.textContent =
+      `${jobs.length} matching job${
+        jobs.length === 1 ? "" : "s"
+      }`;
+
+
+    if (jobs.length === 0) {
+
+      container.innerHTML =
+        `<div class="empty">
+          No matching jobs found.
+        </div>`;
+
+      return;
+    }
+
+
+    container.innerHTML =
+      jobs
+        .slice(0, 100)
+        .map(
+          job => {
+
+            const title =
+              escapeHtml(
+                job.title ||
+                "Untitled role"
+              );
+
+
+            const company =
+              escapeHtml(
+                job.company ||
+                "Unknown company"
+              );
+
+
+            const location =
+              escapeHtml(
+                job.location ||
+                "Unknown location"
+              );
+
+
+            const remote =
+              escapeHtml(
+                job.remote_status ||
+                "unknown"
+              );
+
+
+            const source =
+              escapeHtml(
+                job.source ||
+                "unknown"
+              );
+
+
+            const score =
+              Number(
+                job.relevance_score || 0
+              );
+
+
+            const description =
+              escapeHtml(
+                job.description ||
+                ""
+              );
+
+
+            const url =
+              escapeHtml(
+                job.url ||
+                "#"
+              );
+
+
+            let scoreClass = "";
+
+            if (score < 50) {
+              scoreClass = "low";
+            } else if (score < 75) {
+              scoreClass = "medium";
+            }
+
+
+            return `
+              <article class="job">
+
+                <div class="job-header">
+
+                  <div>
+
+                    <div class="job-title">
+                      ${title}
                     </div>
 
-                    <div class="score">
-                      ${score}/100
+                    <div class="company">
+                      ${company}
                     </div>
 
                   </div>
 
-
-                  <div class="job-meta">
-
-                    <span class="tag">
-                      ${location}
-                    </span>
-
-                    <span class="tag">
-                      ${remote}
-                    </span>
-
-                    <span class="tag">
-                      ${source}
-                    </span>
-
+                  <div class="score ${scoreClass}">
+                    ${score}/100
                   </div>
 
+                </div>
 
-                  ${
-                    description
-                      ? `
-                        <div class="description">
-                          ${description}
-                        </div>
-                      `
-                      : ""
-                  }
 
+                <div class="job-meta">
+
+                  <span class="tag">
+                    ${location}
+                  </span>
+
+                  <span class="tag">
+                    ${remote}
+                  </span>
+
+                  <span class="tag">
+                    ${source}
+                  </span>
+
+                </div>
+
+
+                ${
+                  description
+                    ? `
+                      <div class="description">
+                        ${description}
+                      </div>
+                    `
+                    : ""
+                }
+
+
+                <div class="job-actions">
 
                   <a
                     class="job-link"
@@ -590,128 +862,152 @@
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    View Job
+                    Open Job
                   </a>
 
-                </article>
-              `;
-            }
-          )
-          .join("");
-    }
+                </div>
+
+              </article>
+            `;
+          }
+        )
+        .join("");
+  }
 
 
-    // =================================================
-    // Load latest_report.md
-    // =================================================
+  // =================================================
+  // LOAD REPORT
+  // =================================================
 
-    async function loadReport() {
+  async function loadReport() {
 
-      const container =
-        document.getElementById("report");
+    const container =
+      document.getElementById("report");
 
-      try {
 
-        const response = await fetch(
-          "./data/latest_report.md?" + Date.now()
+    try {
+
+      const response =
+        await fetch(
+          "./data/latest_report.md?" +
+          Date.now()
         );
 
-        if (!response.ok) {
-          throw new Error(
-            "Unable to load latest_report.md"
-          );
-        }
 
-        const report =
-          await response.text();
+      if (!response.ok) {
 
-        container.textContent =
-          report || "No report available yet.";
-
-      } catch (error) {
-
-        container.innerHTML =
-          `<div class="error">
-            Could not load latest report:
-            ${escapeHtml(error.message)}
-          </div>`;
+        throw new Error(
+          "Unable to load latest_report.md"
+        );
       }
+
+
+      const report =
+        await response.text();
+
+
+      container.textContent =
+        report ||
+        "No report available yet.";
+
+    } catch (error) {
+
+      container.innerHTML =
+        `<div class="error">
+          Could not load latest report:
+          ${escapeHtml(error.message)}
+        </div>`;
+    }
+  }
+
+
+  // =================================================
+  // UPDATE DATE
+  // =================================================
+
+  function updateDate() {
+
+    const element =
+      document.getElementById("updated");
+
+
+    const dates =
+      allJobs
+        .map(
+          job =>
+            new Date(
+              job.discovered_at
+            )
+        )
+        .filter(
+          date =>
+            !Number.isNaN(
+              date.getTime()
+            )
+        );
+
+
+    if (!dates.length) {
+
+      element.textContent =
+        "Unknown";
+
+      return;
     }
 
 
-    // =================================================
-    // Last update
-    // =================================================
-
-    async function loadUpdateTime() {
-
-      const element =
-        document.getElementById("updated");
-
-      try {
-
-        const response =
-          await fetch(
-            "./data/jobs.json?" + Date.now()
-          );
-
-        const jobs =
-          await response.json();
-
-        if (
-          Array.isArray(jobs) &&
-          jobs.length > 0
-        ) {
-
-          const dates =
-            jobs
-              .map(
-                job =>
-                  new Date(
-                    job.discovered_at
-                  )
-              )
-              .filter(
-                date =>
-                  !Number.isNaN(
-                    date.getTime()
-                  )
-              );
-
-          if (dates.length > 0) {
-
-            const latest =
-              new Date(
-                Math.max(
-                  ...dates.map(
-                    date =>
-                      date.getTime()
-                  )
-                )
-              );
-
-            element.textContent =
-              latest.toLocaleDateString();
-          }
-        }
-
-      } catch (error) {
-
-        element.textContent =
-          "Unknown";
-      }
-    }
+    const latest =
+      new Date(
+        Math.max(
+          ...dates.map(
+            date =>
+              date.getTime()
+          )
+        )
+      );
 
 
-    // =================================================
-    // Start
-    // =================================================
+    element.textContent =
+      latest.toLocaleDateString();
+  }
 
-    loadJobs();
-    loadReport();
-    loadUpdateTime();
 
-  </script>
+  // =================================================
+  // CONTROLS
+  // =================================================
+
+  document
+    .getElementById("search")
+    .addEventListener(
+      "input",
+      renderJobs
+    );
+
+
+  document
+    .getElementById("remoteFilter")
+    .addEventListener(
+      "change",
+      renderJobs
+    );
+
+
+  document
+    .getElementById("sort")
+    .addEventListener(
+      "change",
+      renderJobs
+    );
+
+
+  // =================================================
+  // START
+  // =================================================
+
+  loadJobs();
+  loadReport();
+
+</script>
 
 </body>
 </html>
