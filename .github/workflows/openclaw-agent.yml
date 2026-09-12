@@ -41,6 +41,12 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install job search dependencies
+        run: |
+         python -m pip install --upgrade pip
+         pip install requests beautifulsoup4
+
+
       # --------------------------------------------------
       # NODE 26
       # --------------------------------------------------
@@ -330,15 +336,17 @@ jobs:
 
           You are the Personal Career Agent.
 
-          The Job Search Agent has already searched public
-          sources and populated:
+          The Python Job Search Agent has already searched
+          public job sources.
 
-          data/jobs.json
+           Read:
 
-          Your job is to analyze those jobs and produce the
-          daily career briefing.
+           data/jobs.json
 
-          Do NOT perform independent job discovery.
+          Do not perform independent job discovery.
+
+          Your responsibility is to analyze the jobs collected
+          by the Python Job Search Agent.
 
           ==================================================
           READ
@@ -499,6 +507,27 @@ jobs:
       # --------------------------------------------------
       # AGENT 2 — CAREER ANALYSIS
       # --------------------------------------------------
+      - name: Search jobs
+        run: |
+         python agent/search_jobs.py
+
+      - name: Verify jobs data
+        run: |
+         test -f data/jobs.json
+
+         python - <<'PY'
+         import json
+
+         with open("data/jobs.json", encoding="utf-8") as f:
+         jobs = json.load(f)
+
+         if not isinstance(jobs, list):
+         raise SystemExit("data/jobs.json must be a JSON list")
+
+         print(f"Jobs available: {len(jobs)}")
+         PY
+
+
 
       - name: Run OpenClaw Career Agent
         env:
