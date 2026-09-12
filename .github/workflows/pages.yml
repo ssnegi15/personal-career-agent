@@ -7,6 +7,7 @@ on:
     paths:
       - "site/**"
       - "data/**"
+      - ".github/workflows/pages.yml"
 
   workflow_dispatch:
 
@@ -34,20 +35,48 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Show repository files
+        run: |
+          echo "===== SITE FILES ====="
+          find site -maxdepth 2 -type f -print
+
+          echo "===== SITE INDEX ====="
+          head -30 site/index.html
+
+          echo "===== CHECK FOR KIRA ====="
+          if grep -qi "About KIRA" site/index.html; then
+            echo "ERROR: KIRA content exists in site/index.html"
+            exit 1
+          else
+            echo "OK: KIRA content not found"
+          fi
+
       - name: Prepare website
         run: |
-
           rm -rf public
 
           mkdir -p public/data
 
-          cp -r site/* public/
+          cp -R site/. public/
 
-          cp data/jobs.json \
-             public/data/jobs.json
+          cp data/jobs.json public/data/jobs.json
+          cp data/latest_report.md public/data/latest_report.md
 
-          cp data/latest_report.md \
-             public/data/latest_report.md
+      - name: Verify published index
+        run: |
+          echo "===== PUBLISHED INDEX ====="
+          head -30 public/index.html
+
+          echo "===== PUBLISHED FILES ====="
+          find public -maxdepth 3 -type f -print
+
+          echo "===== CHECK PUBLISHED KIRA ====="
+          if grep -qi "About KIRA" public/index.html; then
+            echo "ERROR: KIRA content found in published index"
+            exit 1
+          else
+            echo "OK: KIRA content not found"
+          fi
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
