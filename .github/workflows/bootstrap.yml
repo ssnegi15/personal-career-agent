@@ -1,0 +1,34 @@
+name: Bootstrap Career Agent
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run bootstrap
+        run: |
+          chmod +x bootstrap.sh
+          ./bootstrap.sh
+
+      - name: Commit generated project
+        run: |
+          git config user.name "career-agent"
+          git config user.email "career-agent@users.noreply.github.com"
+
+          git add .
+
+          if git diff --cached --quiet; then
+            echo "Nothing to commit"
+          else
+            git commit -m "chore: initialize career agent"
+            git push
+          fi
