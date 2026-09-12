@@ -1,0 +1,177 @@
+name: OpenClaw Career Agent
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "30 2 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: openclaw-career-agent
+  cancel-in-progress: false
+
+jobs:
+
+  career-agent:
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 30
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install OpenClaw
+        run: |
+          curl -fsSL \
+            --proto '=https' \
+            --tlsv1.2 \
+            https://openclaw.ai/install.sh \
+            | bash -s -- --no-onboard
+
+      - name: Verify OpenClaw
+        run: |
+          openclaw --version
+          openclaw --help
+
+      - name: Create agent task
+        run: |
+
+          cat > "$RUNNER_TEMP/career-task.md" <<'EOF'
+
+          You are the Personal Career Agent.
+
+          Read these repository files:
+
+          memory/profile.yaml
+          memory/preferences.yaml
+          memory/decisions.json
+          memory/lessons.json
+          memory/search_history.json
+          memory/rejected_jobs.json
+          memory/saved_jobs.json
+          data/jobs.json
+
+          Read:
+
+          agent/prompts/system.txt
+
+          Your execution environment is a temporary
+          GitHub Actions Linux runner.
+
+          SECURITY:
+
+          Never access anything outside the repository.
+
+          Never access:
+
+          - user's Mac
+          - host filesystem
+          - SSH
+          - Keychain
+          - browser passwords
+          - Gmail
+          - private email
+          - private accounts
+
+          Never:
+
+          - apply for jobs
+          - contact recruiters
+          - send external messages
+          - spend money
+          - modify GitHub workflows
+
+          You may analyze information already available
+          to the agent.
+
+          Today:
+
+          1. Review the candidate profile.
+          2. Review previous job data.
+          3. Review previous decisions.
+          4. Analyze the current career-search state.
+          5. Improve the search strategy where appropriate.
+          6. Generate useful career recommendations.
+          7. Generate interview questions.
+          8. Generate model answers.
+          9. Identify skill gaps.
+          10. Identify decisions requiring user input.
+
+          Save the final briefing to:
+
+          data/latest_report.md
+
+          Update agent learning state only when justified.
+
+          Never claim an external action happened unless
+          it actually happened.
+
+          EOF
+
+      - name: Run OpenClaw
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+
+        run: |
+
+          openclaw agent exec \
+            --isolated \
+            --auth-env-only \
+            --model openrouter/auto \
+            --message-file "$RUNNER_TEMP/career-task.md" \
+            --cwd "$GITHUB_WORKSPACE" \
+            --timeout 1200 \
+            --json \
+            > "$RUNNER_TEMP/openclaw-result.json"
+
+      - name: Display result
+        if: always()
+        run: |
+
+          if [ -f "$RUNNER_TEMP/openclaw-result.json" ]; then
+            cat "$RUNNER_TEMP/openclaw-result.json"
+          fi
+
+      - name: Check generated report
+        run: |
+
+          test -f data/latest_report.md
+
+          echo "Career report generated."
+
+      - name: Save agent state
+        run: |
+
+          git config user.name \
+            "personal-career-agent"
+
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data memory
+
+          if git diff --cached --quiet; then
+
+            echo "No agent state changes."
+
+          else
+
+            git commit \
+              -m "chore(agent): daily career update"
+
+            git push
+
+          fi
