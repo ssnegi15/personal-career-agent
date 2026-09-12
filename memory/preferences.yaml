@@ -1,0 +1,35 @@
+preferences:
+
+  minimum_experience_years: 10
+
+  remote_only: true
+
+  locations:
+    - Remote India
+
+  target_roles:
+    - Principal Software Engineer
+    - Staff Software Engineer
+    - Software Architect
+    - Associate Director
+    - Senior Engineering Manager
+
+  priorities:
+
+    architecture: high
+    technical_leadership: high
+    distributed_systems: high
+    full_stack: high
+    cloud: high
+    backend: high
+    system_design: high
+    scalability: high
+
+  job_search:
+
+    duplicate_detection: true
+    relevance_scoring: true
+    description_analysis: true
+
+  automatic_application: false
+  recruiter_contact: false

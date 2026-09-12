@@ -1,0 +1,37 @@
+{
+  "agent": {
+    "name": "Personal Career Agent"
+  },
+
+  "model": {
+    "provider": "openrouter",
+    "primary": "openrouter/auto"
+  },
+
+  "security": {
+    "localMachineAccess": false,
+    "macAccess": false,
+    "hostFilesystemAccess": false,
+    "sshAccess": false,
+    "keychainAccess": false,
+    "browserPasswordAccess": false,
+
+    "workflowModification": false,
+
+    "automaticApplications": false,
+    "automaticRecruiterContact": false,
+    "automaticExternalMessages": false,
+
+    "externalActionsRequireConfirmation": true
+  },
+
+  "workspace": {
+    "repositoryOnly": true
+  },
+
+  "career": {
+    "automaticApplications": false,
+    "automaticRecruiterContact": false,
+    "requireConfirmationForExternalActions": true
+  }
+}

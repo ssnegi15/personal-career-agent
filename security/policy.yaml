@@ -1,0 +1,38 @@
+security:
+  execution_environment: github_actions_only
+
+  local_machine_access: false
+  mac_access: false
+
+  filesystem_access:
+    allowed:
+      - repository_workspace
+      - data
+      - memory
+    denied:
+      - host_filesystem
+      - user_home
+      - ssh
+      - keychain
+      - browser_profiles
+
+  ssh_access: false
+  keychain_access: false
+  browser_password_access: false
+
+  gmail_access: false
+  email_access: false
+
+  automatic_job_application: false
+  automatic_recruiter_contact: false
+  automatic_external_messages: false
+  automatic_spending: false
+
+  self_modify_code: false
+  self_modify_workflows: false
+
+  external_side_effects:
+    require_confirmation: true
+
+  preference_changes:
+    require_confirmation: true

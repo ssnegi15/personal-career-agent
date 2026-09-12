@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>Personal Career Agent</title>
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #07111f;
+  color: #edf4ff;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+}
+
+header {
+  padding: 22px;
+  background: #0c1728;
+  border-bottom: 1px solid #22334f;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 23px;
+}
+
+header p {
+  margin: 7px 0 0;
+  color: #8ea2bc;
+}
+
+nav {
+  display: flex;
+  gap: 8px;
+  padding: 13px 22px;
+  background: #0a1423;
+  border-bottom: 1px solid #22334f;
+  overflow-x: auto;
+}
+
+nav button {
+  border: 1px solid #2a3b59;
+  background: #16253a;
+  color: white;
+  border-radius: 8px;
+  padding: 9px 14px;
+  cursor: pointer;
+}
+
+main {
+  max-width: 1200px;
+  margin: auto;
+  padding: 25px;
+}
+
+.card {
+  background: #0d1a2d;
+  border: 1px solid #243653;
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 18px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.stat {
+  background: #101f35;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.number {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.muted {
+  color: #91a4bd;
+}
+
+.job {
+  border-bottom: 1px solid #263751;
+  padding: 18px 0;
+}
+
+.job:last-child {
+  border-bottom: 0;
+}
+
+.score {
+  color: #39d17f;
+  font-weight: 700;
+}
+
+a {
+  color: #8fb5ff;
+}
+
+pre {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  font-family: inherit;
+}
+
+.warning {
+  color: #ffc857;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>🤖 Personal Career Agent</h1>
+
+<p>
+Principal · Staff · Architect · Associate Director ·
+Senior Engineering Manager
+</p>
+
+</header>
+
+<nav>
+
+<button onclick="show('dashboard')">
+Dashboard
+</button>
+
+<button onclick="show('jobs')">
+Jobs
+</button>
+
+<button onclick="show('interview')">
+Interview
+</button>
+
+<button onclick="show('decisions')">
+Decisions
+</button>
+
+<button onclick="show('memory')">
+Memory
+</button>
+
+</nav>
+
+<main>
+
+<section id="dashboard">
+
+<div class="card">
+
+<h2>Good morning 👋</h2>
+
+<p class="muted">
+
+Your personal career agent searches for relevant
+senior engineering opportunities, analyzes them,
+and prepares you for interviews.
+
+</p>
+
+</div>
+
+<div class="stats">
+
+<div class="stat">
+
+<div
+  class="number"
+  id="jobCount"
+>
+0
+</div>
+
+<div class="muted">
+Jobs
+</div>
+
+</div>
+
+<div class="stat">
+
+<div
+  class="number"
+  id="strongCount"
+>
+0
+</div>
+
+<div class="muted">
+Strong matches
+</div>
+
+</div>
+
+<div class="stat">
+
+<div class="number">
+10+
+</div>
+
+<div class="muted">
+Years experience
+</div>
+
+</div>
+
+<div class="stat">
+
+<div class="number">
+🇮🇳
+</div>
+
+<div class="muted">
+Remote India
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>🧠 Latest briefing</h2>
+
+<pre id="report">
+Loading...
+</pre>
+
+</div>
+
+</section>
+
+<section
+  id="jobs"
+  style="display:none"
+>
+
+<div class="card">
+
+<h2>💼 Recommended jobs</h2>
+
+<div id="jobList">
+Loading...
+</div>
+
+</div>
+
+</section>
+
+<section
+  id="interview"
+  style="display:none"
+>
+
+<div class="card">
+
+<h2>🎯 Daily Interview Preparation</h2>
+
+<p class="muted">
+
+Interview questions and model answers generated
+from your strongest opportunities will appear here.
+
+</p>
+
+</div>
+
+</section>
+
+<section
+  id="decisions"
+  style="display:none"
+>
+
+<div class="card">
+
+<h2>🤔 Decisions</h2>
+
+<p class="muted">
+
+When the agent needs your input, decisions will
+appear here.
+
+</p>
+
+</div>
+
+</section>
+
+<section
+  id="memory"
+  style="display:none"
+>
+
+<div class="card">
+
+<h2>🧠 Agent Memory</h2>
+
+<p>
+Experience: 10+ years
+</p>
+
+<p>
+Target roles:
+Principal / Staff / Architect /
+Associate Director / Senior Engineering Manager
+</p>
+
+<p>
+Location: Remote India
+</p>
+
+<p>
+Automatic applications:
+<strong>Disabled</strong>
+</p>
+
+<p>
+Recruiter contact:
+<strong>Disabled</strong>
+</p>
+
+</div>
+
+</section>
+
+</main>
+
+<script>
+
+function show(id) {
+
+  document
+    .querySelectorAll("main section")
+    .forEach(
+      section =>
+        section.style.display = "none"
+    );
+
+  document
+    .getElementById(id)
+    .style.display = "block";
+}
+
+
+function escapeHtml(value) {
+
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+
+async function loadJobs() {
+
+  try {
+
+    const response =
+      await fetch("./data/jobs.json");
+
+    if (!response.ok) {
+      throw new Error("jobs unavailable");
+    }
+
+    const jobs =
+      await response.json();
+
+    document
+      .getElementById("jobCount")
+      .textContent =
+        jobs.length;
+
+    document
+      .getElementById("strongCount")
+      .textContent =
+        jobs.filter(
+          job => (job.score || 0) >= 70
+        ).length;
+
+    const list =
+      document.getElementById("jobList");
+
+    if (!jobs.length) {
+
+      list.innerHTML =
+        "<p class='muted'>" +
+        "No jobs collected yet. " +
+        "Run the agent." +
+        "</p>";
+
+      return;
+    }
+
+    list.innerHTML =
+      jobs
+        .slice(0, 30)
+        .map(job => {
+
+          const title =
+            escapeHtml(
+              job.title || "Unknown"
+            );
+
+          const company =
+            escapeHtml(
+              job.company || "Unknown"
+            );
+
+          const location =
+            escapeHtml(
+              job.location || "Unknown"
+            );
+
+          const score =
+            job.score || 0;
+
+          const url =
+            escapeHtml(
+              job.url || "#"
+            );
+
+          return `
+
+            <div class="job">
+
+              <h3>${title}</h3>
+
+              <div class="muted">
+
+                ${company}
+                ·
+                ${location}
+
+              </div>
+
+              <p>
+
+                Match:
+
+                <span class="score">
+                  ${score}%
+                </span>
+
+              </p>
+
+              <a
+                href="${url}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View job →
+              </a>
+
+            </div>
+
+          `;
+
+        })
+        .join("");
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+  }
+}
+
+
+async function loadReport() {
+
+  try {
+
+    const response =
+      await fetch(
+        "./data/latest_report.md"
+      );
+
+    if (!response.ok) {
+      return;
+    }
+
+    document
+      .getElementById("report")
+      .textContent =
+        await response.text();
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+  }
+}
+
+
+loadJobs();
+
+loadReport();
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+candidate:
+
+  experience_years: 10+
+
+  target_roles:
+
+    - Principal Software Engineer
+    - Staff Software Engineer
+    - Software Architect
+    - Associate Director
+    - Senior Engineering Manager
+
+  location:
+
+    preferred:
+      - Remote India
+
+    remote_only: true
+
+  skills:
+
+    - Full Stack
+    - Software Architecture
+    - Distributed Systems
+    - Cloud
+    - Backend Engineering
+    - System Design
+    - Technical Leadership
+    - Microservices
+    - API Design
+    - Scalability
+
+  career_preferences:
+
+    seniority:
+      - Principal
+      - Staff
+      - Architect
+      - Associate Director
+      - Senior Manager
+
+    work_mode:
+      - Remote
+
+    geography:
+      - India
