@@ -142,7 +142,7 @@
     }
 
     /* ================================
-       JOBS
+       JOB
        ================================ */
 
     .job {
@@ -214,7 +214,41 @@
     .description {
       color: #cbd5e1;
       line-height: 1.6;
-      margin-bottom: 17px;
+      margin: 12px 0;
+    }
+
+    .description-preview {
+      color: #cbd5e1;
+      line-height: 1.6;
+      margin: 12px 0 8px;
+    }
+
+    details {
+      margin: 10px 0 16px;
+    }
+
+    summary {
+      cursor: pointer;
+      color: var(--blue);
+      font-size: 14px;
+      user-select: none;
+    }
+
+    summary:hover {
+      text-decoration: underline;
+    }
+
+    .full-description {
+      margin-top: 12px;
+      color: #cbd5e1;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      max-height: 500px;
+      overflow-y: auto;
+      padding: 15px;
+      background: var(--panel2);
+      border-radius: 8px;
+      border: 1px solid var(--border);
     }
 
     .job-actions {
@@ -291,6 +325,7 @@
     }
 
     @media (max-width: 750px) {
+
       .controls {
         grid-template-columns: 1fr;
       }
@@ -353,7 +388,7 @@
 
 
   <!-- ============================================
-       JOB SECTION
+       JOBS
        ============================================ -->
 
   <section>
@@ -449,6 +484,81 @@
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
+  }
+
+
+  // =================================================
+  // CLEAN DESCRIPTION
+  // =================================================
+
+  function cleanDescription(value) {
+
+    if (
+      value === null ||
+      value === undefined
+    ) {
+      return "";
+    }
+
+    let text = String(value);
+
+    /*
+     * Remove common HTML markup from job feeds.
+     */
+
+    text = text
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/p>/gi, "\n")
+      .replace(/<[^>]*>/g, " ");
+
+    /*
+     * Decode a few common HTML entities.
+     */
+
+    text = text
+      .replace(/&nbsp;/gi, " ")
+      .replace(/&amp;/gi, "&")
+      .replace(/&lt;/gi, "<")
+      .replace(/&gt;/gi, ">")
+      .replace(/&quot;/gi, '"')
+      .replace(/&#039;/gi, "'");
+
+    /*
+     * Normalize whitespace.
+     */
+
+    text = text
+      .replace(/\s+/g, " ")
+      .trim();
+
+    return text;
+  }
+
+
+  // =================================================
+  // SHORT DESCRIPTION
+  // =================================================
+
+  function shortDescription(value) {
+
+    const text =
+      cleanDescription(value);
+
+    if (!text) {
+      return "";
+    }
+
+    const maxLength = 320;
+
+    if (text.length <= maxLength) {
+      return text;
+    }
+
+    return (
+      text.substring(0, maxLength)
+        .replace(/\s+\S*$/, "") +
+      "..."
+    );
   }
 
 
@@ -779,10 +889,23 @@
               );
 
 
-            const description =
+            const rawDescription =
+              cleanDescription(
+                job.description || ""
+              );
+
+
+            const preview =
               escapeHtml(
-                job.description ||
-                ""
+                shortDescription(
+                  rawDescription
+                )
+              );
+
+
+            const fullDescription =
+              escapeHtml(
+                rawDescription
               );
 
 
@@ -844,11 +967,30 @@
 
 
                 ${
-                  description
+                  preview
                     ? `
-                      <div class="description">
-                        ${description}
+                      <div class="description-preview">
+                        ${preview}
                       </div>
+                    `
+                    : ""
+                }
+
+
+                ${
+                  fullDescription
+                    ? `
+                      <details>
+
+                        <summary>
+                          View full description
+                        </summary>
+
+                        <div class="full-description">
+                          ${fullDescription}
+                        </div>
+
+                      </details>
                     `
                     : ""
                 }
