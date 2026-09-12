@@ -136,7 +136,7 @@ jobs:
           openclaw agent exec \
             --isolated \
             --auth-env-only \
-            --model openrouter/openrouter/free
+            --model openrouter/openrouter/free \
             --message-file "$RUNNER_TEMP/career-task.md" \
             --cwd "$GITHUB_WORKSPACE" \
             --timeout 1200 \
