@@ -1,538 +1,717 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8">
 
-<meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
->
+  <title>Personal Career Agent</title>
 
-<title>Personal Career Agent</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-light: #1f2937;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --green: #22c55e;
+      --blue: #60a5fa;
+      --yellow: #facc15;
+      --red: #f87171;
+    }
 
-<style>
+    * {
+      box-sizing: border-box;
+    }
 
-* {
-  box-sizing: border-box;
-}
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+    }
 
-body {
-  margin: 0;
-  background: #07111f;
-  color: #edf4ff;
-  font-family:
-    Inter,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    sans-serif;
-}
+    a {
+      color: var(--blue);
+      text-decoration: none;
+    }
 
-header {
-  padding: 22px;
-  background: #0c1728;
-  border-bottom: 1px solid #22334f;
-}
+    a:hover {
+      text-decoration: underline;
+    }
 
-header h1 {
-  margin: 0;
-  font-size: 23px;
-}
+    .container {
+      width: min(1200px, 94%);
+      margin: 0 auto;
+      padding: 32px 0 60px;
+    }
 
-header p {
-  margin: 7px 0 0;
-  color: #8ea2bc;
-}
+    header {
+      margin-bottom: 30px;
+    }
 
-nav {
-  display: flex;
-  gap: 8px;
-  padding: 13px 22px;
-  background: #0a1423;
-  border-bottom: 1px solid #22334f;
-  overflow-x: auto;
-}
+    h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+    }
 
-nav button {
-  border: 1px solid #2a3b59;
-  background: #16253a;
-  color: white;
-  border-radius: 8px;
-  padding: 9px 14px;
-  cursor: pointer;
-}
+    h2 {
+      margin-top: 0;
+    }
 
-main {
-  max-width: 1200px;
-  margin: auto;
-  padding: 25px;
-}
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+    }
 
-.card {
-  background: #0d1a2d;
-  border: 1px solid #243653;
-  border-radius: 14px;
-  padding: 22px;
-  margin-bottom: 18px;
-}
+    .stats {
+      display: grid;
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(180px, 1fr)
+        );
 
-.stats {
-  display: grid;
-  grid-template-columns:
-    repeat(auto-fit, minmax(180px, 1fr));
-  gap: 14px;
-}
+      gap: 16px;
+      margin-bottom: 30px;
+    }
 
-.stat {
-  background: #101f35;
-  border-radius: 12px;
-  padding: 18px;
-}
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
 
-.number {
-  font-size: 30px;
-  font-weight: 700;
-}
+    .stat-number {
+      font-size: 30px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
 
-.muted {
-  color: #91a4bd;
-}
+    .stat-label {
+      color: var(--muted);
+      font-size: 14px;
+    }
 
-.job {
-  border-bottom: 1px solid #263751;
-  padding: 18px 0;
-}
+    section {
+      margin-bottom: 35px;
+    }
 
-.job:last-child {
-  border-bottom: 0;
-}
+    .job {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 14px;
+    }
 
-.score {
-  color: #39d17f;
-  font-weight: 700;
-}
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-start;
+    }
 
-a {
-  color: #8fb5ff;
-}
+    .job-title {
+      font-size: 20px;
+      font-weight: 650;
+      margin-bottom: 7px;
+    }
 
-pre {
-  white-space: pre-wrap;
-  line-height: 1.6;
-  font-family: inherit;
-}
+    .company {
+      color: var(--muted);
+    }
 
-.warning {
-  color: #ffc857;
-}
+    .score {
+      min-width: 65px;
+      text-align: center;
+      background: #14532d;
+      color: #bbf7d0;
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-weight: 700;
+    }
 
-</style>
+    .job-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+    }
 
+    .tag {
+      background: var(--panel-light);
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: 12px;
+    }
+
+    .description {
+      color: #cbd5e1;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .job-link {
+      display: inline-block;
+      background: #2563eb;
+      color: white;
+      padding: 9px 14px;
+      border-radius: 7px;
+      font-weight: 600;
+    }
+
+    .job-link:hover {
+      background: #1d4ed8;
+      text-decoration: none;
+    }
+
+    .report {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 25px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      color: #dbeafe;
+      overflow-x: auto;
+    }
+
+    .empty {
+      background: var(--panel);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 25px;
+      color: var(--muted);
+    }
+
+    .loading {
+      color: var(--muted);
+    }
+
+    .error {
+      color: var(--red);
+      background: #450a0a;
+      border: 1px solid #7f1d1d;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 650px) {
+      .job-header {
+        flex-direction: column;
+      }
+
+      .score {
+        width: fit-content;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
+  <main class="container">
 
-<h1>🤖 Personal Career Agent</h1>
+    <header>
+      <h1>Personal Career Agent</h1>
 
-<p>
-Principal · Staff · Architect · Associate Director ·
-Senior Engineering Manager
-</p>
+      <p class="subtitle">
+        Autonomous job discovery, analysis and interview preparation
+      </p>
+    </header>
 
-</header>
 
-<nav>
+    <!-- ============================================
+         STATS
+         ============================================ -->
 
-<button onclick="show('dashboard')">
-Dashboard
-</button>
+    <div class="stats">
 
-<button onclick="show('jobs')">
-Jobs
-</button>
+      <div class="stat">
+        <div
+          class="stat-number"
+          id="jobCount"
+        >
+          -
+        </div>
 
-<button onclick="show('interview')">
-Interview
-</button>
+        <div class="stat-label">
+          Jobs discovered
+        </div>
+      </div>
 
-<button onclick="show('decisions')">
-Decisions
-</button>
 
-<button onclick="show('memory')">
-Memory
-</button>
+      <div class="stat">
+        <div
+          class="stat-number"
+          id="remoteCount"
+        >
+          -
+        </div>
 
-</nav>
+        <div class="stat-label">
+          Remote jobs
+        </div>
+      </div>
 
-<main>
 
-<section id="dashboard">
+      <div class="stat">
+        <div
+          class="stat-number"
+          id="topScore"
+        >
+          -
+        </div>
 
-<div class="card">
+        <div class="stat-label">
+          Highest match
+        </div>
+      </div>
 
-<h2>Good morning 👋</h2>
 
-<p class="muted">
+      <div class="stat">
+        <div
+          class="stat-number"
+          id="updated"
+        >
+          -
+        </div>
 
-Your personal career agent searches for relevant
-senior engineering opportunities, analyzes them,
-and prepares you for interviews.
+        <div class="stat-label">
+          Last update
+        </div>
+      </div>
 
-</p>
+    </div>
 
-</div>
 
-<div class="stats">
+    <!-- ============================================
+         JOBS
+         ============================================ -->
 
-<div class="stat">
+    <section>
 
-<div
-  class="number"
-  id="jobCount"
->
-0
-</div>
+      <h2>
+        Top Job Opportunities
+      </h2>
 
-<div class="muted">
-Jobs
-</div>
+      <div
+        id="jobs"
+        class="loading"
+      >
+        Loading jobs...
+      </div>
 
-</div>
+    </section>
 
-<div class="stat">
 
-<div
-  class="number"
-  id="strongCount"
->
-0
-</div>
+    <!-- ============================================
+         REPORT
+         ============================================ -->
 
-<div class="muted">
-Strong matches
-</div>
+    <section>
 
-</div>
+      <h2>
+        Daily Career Briefing
+      </h2>
 
-<div class="stat">
+      <div
+        id="report"
+        class="report"
+      >
+        Loading report...
+      </div>
 
-<div class="number">
-10+
-</div>
+    </section>
 
-<div class="muted">
-Years experience
-</div>
 
-</div>
+    <footer>
+      Personal Career Agent · GitHub Actions · OpenClaw
+    </footer>
 
-<div class="stat">
+  </main>
 
-<div class="number">
-🇮🇳
-</div>
 
-<div class="muted">
-Remote India
-</div>
+  <script>
 
-</div>
+    // =================================================
+    // Utility
+    // =================================================
 
-</div>
+    function escapeHtml(value) {
 
-<div class="card">
+      if (value === null || value === undefined) {
+        return "";
+      }
 
-<h2>🧠 Latest briefing</h2>
-
-<pre id="report">
-Loading...
-</pre>
-
-</div>
-
-</section>
-
-<section
-  id="jobs"
-  style="display:none"
->
-
-<div class="card">
-
-<h2>💼 Recommended jobs</h2>
-
-<div id="jobList">
-Loading...
-</div>
-
-</div>
-
-</section>
-
-<section
-  id="interview"
-  style="display:none"
->
-
-<div class="card">
-
-<h2>🎯 Daily Interview Preparation</h2>
-
-<p class="muted">
-
-Interview questions and model answers generated
-from your strongest opportunities will appear here.
-
-</p>
-
-</div>
-
-</section>
-
-<section
-  id="decisions"
-  style="display:none"
->
-
-<div class="card">
-
-<h2>🤔 Decisions</h2>
-
-<p class="muted">
-
-When the agent needs your input, decisions will
-appear here.
-
-</p>
-
-</div>
-
-</section>
-
-<section
-  id="memory"
-  style="display:none"
->
-
-<div class="card">
-
-<h2>🧠 Agent Memory</h2>
-
-<p>
-Experience: 10+ years
-</p>
-
-<p>
-Target roles:
-Principal / Staff / Architect /
-Associate Director / Senior Engineering Manager
-</p>
-
-<p>
-Location: Remote India
-</p>
-
-<p>
-Automatic applications:
-<strong>Disabled</strong>
-</p>
-
-<p>
-Recruiter contact:
-<strong>Disabled</strong>
-</p>
-
-</div>
-
-</section>
-
-</main>
-
-<script>
-
-function show(id) {
-
-  document
-    .querySelectorAll("main section")
-    .forEach(
-      section =>
-        section.style.display = "none"
-    );
-
-  document
-    .getElementById(id)
-    .style.display = "block";
-}
-
-
-function escapeHtml(value) {
-
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-
-async function loadJobs() {
-
-  try {
-
-    const response =
-      await fetch("./data/jobs.json");
-
-    if (!response.ok) {
-      throw new Error("jobs unavailable");
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
-    const jobs =
-      await response.json();
 
-    document
-      .getElementById("jobCount")
-      .textContent =
+    // =================================================
+    // Load jobs.json
+    // =================================================
+
+    async function loadJobs() {
+
+      const container =
+        document.getElementById("jobs");
+
+      try {
+
+        const response = await fetch(
+          "./data/jobs.json?" + Date.now()
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            "Unable to load jobs.json"
+          );
+        }
+
+        const jobs = await response.json();
+
+        if (!Array.isArray(jobs)) {
+          throw new Error(
+            "jobs.json does not contain a list"
+          );
+        }
+
+        renderJobs(jobs);
+
+      } catch (error) {
+
+        container.innerHTML =
+          `<div class="error">
+            Could not load jobs.json:
+            ${escapeHtml(error.message)}
+          </div>`;
+
+      }
+    }
+
+
+    // =================================================
+    // Render jobs
+    // =================================================
+
+    function renderJobs(jobs) {
+
+      const container =
+        document.getElementById("jobs");
+
+      const jobCount =
+        document.getElementById("jobCount");
+
+      const remoteCount =
+        document.getElementById("remoteCount");
+
+      const topScore =
+        document.getElementById("topScore");
+
+      jobCount.textContent =
         jobs.length;
 
-    document
-      .getElementById("strongCount")
-      .textContent =
+
+      const remoteJobs =
         jobs.filter(
-          job => (job.score || 0) >= 70
-        ).length;
+          job =>
+            String(
+              job.remote_status || ""
+            ).toLowerCase() === "remote"
+        );
 
-    const list =
-      document.getElementById("jobList");
+      remoteCount.textContent =
+        remoteJobs.length;
 
-    if (!jobs.length) {
 
-      list.innerHTML =
-        "<p class='muted'>" +
-        "No jobs collected yet. " +
-        "Run the agent." +
-        "</p>";
+      const scores =
+        jobs
+          .map(
+            job =>
+              Number(
+                job.relevance_score || 0
+              )
+          )
+          .filter(
+            score => !Number.isNaN(score)
+          );
 
-      return;
+
+      topScore.textContent =
+        scores.length
+          ? Math.max(...scores)
+          : "0";
+
+
+      if (jobs.length === 0) {
+
+        container.innerHTML =
+          `<div class="empty">
+            No jobs have been discovered yet.
+          </div>`;
+
+        return;
+      }
+
+
+      container.innerHTML =
+        jobs
+          .slice(0, 50)
+          .map(
+            job => {
+
+              const title =
+                escapeHtml(
+                  job.title || "Untitled role"
+                );
+
+              const company =
+                escapeHtml(
+                  job.company || "Unknown company"
+                );
+
+              const location =
+                escapeHtml(
+                  job.location || "Unknown location"
+                );
+
+              const remote =
+                escapeHtml(
+                  job.remote_status || "unknown"
+                );
+
+              const source =
+                escapeHtml(
+                  job.source || "unknown"
+                );
+
+              const score =
+                Number(
+                  job.relevance_score || 0
+                );
+
+              const description =
+                escapeHtml(
+                  job.description || ""
+                );
+
+              const url =
+                escapeHtml(
+                  job.url || "#"
+                );
+
+
+              return `
+                <article class="job">
+
+                  <div class="job-header">
+
+                    <div>
+
+                      <div class="job-title">
+                        ${title}
+                      </div>
+
+                      <div class="company">
+                        ${company}
+                      </div>
+
+                    </div>
+
+                    <div class="score">
+                      ${score}/100
+                    </div>
+
+                  </div>
+
+
+                  <div class="job-meta">
+
+                    <span class="tag">
+                      ${location}
+                    </span>
+
+                    <span class="tag">
+                      ${remote}
+                    </span>
+
+                    <span class="tag">
+                      ${source}
+                    </span>
+
+                  </div>
+
+
+                  ${
+                    description
+                      ? `
+                        <div class="description">
+                          ${description}
+                        </div>
+                      `
+                      : ""
+                  }
+
+
+                  <a
+                    class="job-link"
+                    href="${url}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View Job
+                  </a>
+
+                </article>
+              `;
+            }
+          )
+          .join("");
     }
 
-    list.innerHTML =
-      jobs
-        .slice(0, 30)
-        .map(job => {
 
-          const title =
-            escapeHtml(
-              job.title || "Unknown"
-            );
+    // =================================================
+    // Load latest_report.md
+    // =================================================
 
-          const company =
-            escapeHtml(
-              job.company || "Unknown"
-            );
+    async function loadReport() {
 
-          const location =
-            escapeHtml(
-              job.location || "Unknown"
-            );
+      const container =
+        document.getElementById("report");
 
-          const score =
-            job.score || 0;
+      try {
 
-          const url =
-            escapeHtml(
-              job.url || "#"
-            );
+        const response = await fetch(
+          "./data/latest_report.md?" + Date.now()
+        );
 
-          return `
+        if (!response.ok) {
+          throw new Error(
+            "Unable to load latest_report.md"
+          );
+        }
 
-            <div class="job">
+        const report =
+          await response.text();
 
-              <h3>${title}</h3>
+        container.textContent =
+          report || "No report available yet.";
 
-              <div class="muted">
+      } catch (error) {
 
-                ${company}
-                ·
-                ${location}
-
-              </div>
-
-              <p>
-
-                Match:
-
-                <span class="score">
-                  ${score}%
-                </span>
-
-              </p>
-
-              <a
-                href="${url}"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View job →
-              </a>
-
-            </div>
-
-          `;
-
-        })
-        .join("");
-
-  }
-
-  catch (error) {
-
-    console.error(error);
-
-  }
-}
-
-
-async function loadReport() {
-
-  try {
-
-    const response =
-      await fetch(
-        "./data/latest_report.md"
-      );
-
-    if (!response.ok) {
-      return;
+        container.innerHTML =
+          `<div class="error">
+            Could not load latest report:
+            ${escapeHtml(error.message)}
+          </div>`;
+      }
     }
 
-    document
-      .getElementById("report")
-      .textContent =
-        await response.text();
 
-  }
+    // =================================================
+    // Last update
+    // =================================================
 
-  catch (error) {
+    async function loadUpdateTime() {
 
-    console.error(error);
+      const element =
+        document.getElementById("updated");
 
-  }
-}
+      try {
+
+        const response =
+          await fetch(
+            "./data/jobs.json?" + Date.now()
+          );
+
+        const jobs =
+          await response.json();
+
+        if (
+          Array.isArray(jobs) &&
+          jobs.length > 0
+        ) {
+
+          const dates =
+            jobs
+              .map(
+                job =>
+                  new Date(
+                    job.discovered_at
+                  )
+              )
+              .filter(
+                date =>
+                  !Number.isNaN(
+                    date.getTime()
+                  )
+              );
+
+          if (dates.length > 0) {
+
+            const latest =
+              new Date(
+                Math.max(
+                  ...dates.map(
+                    date =>
+                      date.getTime()
+                  )
+                )
+              );
+
+            element.textContent =
+              latest.toLocaleDateString();
+          }
+        }
+
+      } catch (error) {
+
+        element.textContent =
+          "Unknown";
+      }
+    }
 
 
-loadJobs();
+    // =================================================
+    // Start
+    // =================================================
 
-loadReport();
+    loadJobs();
+    loadReport();
+    loadUpdateTime();
 
-</script>
+  </script>
 
 </body>
-
 </html>
