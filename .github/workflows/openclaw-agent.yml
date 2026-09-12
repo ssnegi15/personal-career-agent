@@ -14,27 +14,25 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-
   career-agent:
-
     runs-on: ubuntu-latest
 
-    timeout-minutes: 45
+    timeout-minutes: 30
 
     steps:
 
-      # --------------------------------------------------
+      # ==================================================
       # CHECKOUT
-      # --------------------------------------------------
+      # ==================================================
 
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # --------------------------------------------------
+      # ==================================================
       # PYTHON
-      # --------------------------------------------------
+      # ==================================================
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -43,13 +41,17 @@ jobs:
 
       - name: Install job search dependencies
         run: |
-         python -m pip install --upgrade pip
-         pip install requests beautifulsoup4
+          python -m pip install --upgrade pip
+          pip install requests
 
+      - name: Verify Python
+        run: |
+          python --version
+          pip --version
 
-      # --------------------------------------------------
-      # NODE 26
-      # --------------------------------------------------
+      # ==================================================
+      # NODE / OPENCLAW
+      # ==================================================
 
       - name: Setup Node.js 26
         uses: actions/setup-node@v5
@@ -61,10 +63,6 @@ jobs:
           node --version
           npm --version
 
-      # --------------------------------------------------
-      # OPENCLAW
-      # --------------------------------------------------
-
       - name: Install OpenClaw
         run: |
           npm install -g openclaw@latest
@@ -74,282 +72,71 @@ jobs:
           openclaw --version
           openclaw --help
 
-      # --------------------------------------------------
-      # CREATE SEARCH AGENT PROMPT
-      # --------------------------------------------------
+      # ==================================================
+      # JOB DISCOVERY
+      # ==================================================
 
-      - name: Create job search task
+      - name: Search jobs
         run: |
-          cat > "$RUNNER_TEMP/job-search-task.md" <<'EOF'
-
-          You are the Job Search Agent.
-
-          Your ONLY responsibility is discovering relevant
-          publicly available job opportunities.
-
-          You are running inside a temporary GitHub Actions
-          Linux runner.
-
-          ==================================================
-          CANDIDATE PROFILE
-          ==================================================
-
-          Experience:
-          10+ years
-
-          Target roles:
-
-          - Principal Software Engineer
-          - Staff Software Engineer
-          - Software Architect
-          - Associate Director
-          - Senior Engineering Manager
-          - Similar senior technical leadership roles
-
-          Skills:
-
-          - Full Stack
-          - Software Architecture
-          - Distributed Systems
-          - Cloud
-          - Backend Engineering
-          - System Design
-          - Technical Leadership
-          - Microservices
-          - API Design
-          - Scalability
-
-          Location:
-
-          - Remote India
-          - Remote-only strongly preferred
-
-          ==================================================
-          SEARCH REQUIREMENTS
-          ==================================================
-
-          Search the public web for CURRENT job openings.
-
-          Prioritize:
-
-          1. Direct company career pages
-          2. Greenhouse public job boards
-          3. Lever public job boards
-          4. Ashby public job boards
-          5. Other legitimate public job sources
-
-          Do NOT use Adzuna.
-
-          Prefer direct employer job URLs.
-
-          Search multiple combinations of the target roles
-          and technical skills.
-
-          Examples:
-
-          Principal Software Engineer remote India
-          Staff Software Engineer remote India
-          Software Architect remote India
-          Senior Engineering Manager remote India
-          Principal Engineer India remote
-          Staff Backend Engineer India remote
-          Staff Platform Engineer India remote
-          Engineering Manager India remote
-
-          ==================================================
-          JOB VALIDATION
-          ==================================================
-
-          Only record jobs that can be verified from public
-          information.
-
-          Do not invent jobs.
-
-          Do not invent URLs.
-
-          Prefer jobs that appear currently open.
-
-          Strongly prefer Remote India.
-
-          Remote worldwide jobs may be included when India
-          eligibility is reasonably clear.
-
-          Reject or heavily deprioritize:
-
-          - internships
-          - junior positions
-          - clearly non-technical roles
-          - on-site-only roles
-          - jobs requiring relocation
-          - obviously expired positions
-
-          ==================================================
-          DATA FILE
-          ==================================================
-
-          Read the existing:
-
-          data/jobs.json
-
-          Preserve useful existing jobs.
-
-          Add newly discovered jobs.
-
-          Deduplicate using:
-
-          - URL
-          - company + title
-
-          For each job store:
-
-          - title
-          - company
-          - location
-          - remote_status
-          - url
-          - source
-          - description
-          - discovered_at
-
-          Write valid JSON to:
-
-          data/jobs.json
-
-          ==================================================
-          SECURITY
-          ==================================================
-
-          You are running inside a temporary GitHub Actions
-          Linux runner.
-
-          Never access anything outside the repository
-          workspace except public web information required
-          for job discovery.
-
-          Never access:
-
-          - user's Mac
-          - host filesystem
-          - SSH
-          - SSH keys
-          - Keychain
-          - browser passwords
-          - Gmail
-          - private email
-          - private accounts
-          - personal credentials
-
-          Never:
-
-          - apply for jobs
-          - submit applications
-          - contact recruiters
-          - send messages
-          - send emails
-          - spend money
-          - create paid services
-          - modify .github/workflows/*
-
-          ==================================================
-          FINAL VALIDATION
-          ==================================================
-
-          Before finishing:
-
-          1. Verify data/jobs.json exists.
-          2. Verify it contains valid JSON.
-          3. Verify every job has a URL.
-          4. Verify URLs were actually discovered.
-          5. Do not invent information.
-          6. Do not perform external side effects.
-
-          Your task ends after updating data/jobs.json.
-
-          EOF
-
-      # --------------------------------------------------
-      # VERIFY SEARCH PROMPT
-      # --------------------------------------------------
-
-      - name: Verify job search task
-        run: |
-          test -s "$RUNNER_TEMP/job-search-task.md"
-          echo "Job search task ready."
-
-      # --------------------------------------------------
-      # AGENT 1 — JOB SEARCH
-      # --------------------------------------------------
-
-      - name: Run OpenClaw Job Search Agent
-        env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        run: |
-          openclaw agent exec \
-            --isolated \
-            --auth-env-only \
-            --model openrouter/openrouter/free \
-            --message-file "$RUNNER_TEMP/job-search-task.md" \
-            --cwd "$GITHUB_WORKSPACE" \
-            --timeout 1200 \
-            --json \
-            > "$RUNNER_TEMP/job-search-result.json"
-
-      # --------------------------------------------------
-      # SHOW SEARCH RESULT
-      # --------------------------------------------------
-
-      - name: Display search result
-        if: always()
-        run: |
-          if [ -f "$RUNNER_TEMP/job-search-result.json" ]; then
-            cat "$RUNNER_TEMP/job-search-result.json"
-          fi
-
-      # --------------------------------------------------
-      # VERIFY JOB DATA
-      # --------------------------------------------------
+          python agent/search_jobs.py
 
       - name: Verify jobs data
         run: |
           test -f data/jobs.json
-          test -s data/jobs.json
 
           python - <<'PY'
           import json
 
-          with open("data/jobs.json", "r", encoding="utf-8") as f:
+          path = "data/jobs.json"
+
+          with open(path, encoding="utf-8") as f:
               jobs = json.load(f)
 
           if not isinstance(jobs, list):
-              raise SystemExit("data/jobs.json must contain a JSON list")
+              raise SystemExit(
+                  "data/jobs.json must contain a JSON list"
+              )
 
-          print(f"Jobs available for analysis: {len(jobs)}")
+          print(
+              f"Jobs available for OpenClaw: {len(jobs)}"
+          )
+
+          for job in jobs[:10]:
+              print(
+                  f"- {job.get('title', 'Unknown')} | "
+                  f"{job.get('company', 'Unknown')} | "
+                  f"{job.get('location', 'Unknown')} | "
+                  f"{job.get('url', '')}"
+              )
           PY
 
-      # --------------------------------------------------
-      # CREATE CAREER AGENT PROMPT
-      # --------------------------------------------------
+      # ==================================================
+      # CREATE OPENCLAW TASK
+      # ==================================================
 
-      - name: Create career analysis task
+      - name: Create agent task
         run: |
           cat > "$RUNNER_TEMP/career-task.md" <<'EOF'
 
           You are the Personal Career Agent.
 
-          The Python Job Search Agent has already searched
-          public job sources.
+          ==================================================
+          ROLE
+          ==================================================
 
-           Read:
+          You are a personal autonomous career-analysis
+          assistant.
 
-           data/jobs.json
+          The Python Job Search Agent has already discovered
+          public job opportunities.
 
-          Do not perform independent job discovery.
+          Your job is NOT to perform independent job
+          discovery.
 
-          Your responsibility is to analyze the jobs collected
-          by the Python Job Search Agent.
+          Your job is to analyze the jobs already collected.
 
           ==================================================
-          READ
+          READ THESE FILES
           ==================================================
 
           Read:
@@ -358,180 +145,285 @@ jobs:
           memory/preferences.yaml
           memory/decisions.json
           memory/lessons.json
+          memory/conversation.json
           memory/search_history.json
           memory/rejected_jobs.json
           memory/saved_jobs.json
-          data/jobs.json
 
-          Also read:
+          data/jobs.json
 
           agent/prompts/system.txt
 
           ==================================================
-          ANALYSIS
+          JOB DATA
           ==================================================
 
-          Analyze every relevant job against the candidate.
+          data/jobs.json contains jobs discovered by the
+          Python job-search worker.
 
-          Determine:
+          Analyze those jobs against the candidate profile.
 
-          - overall match score
-          - seniority match
-          - technical skill match
-          - architecture match
-          - distributed systems match
-          - cloud/backend match
-          - leadership match
-          - remote/location match
-          - strengths
-          - skill gaps
-          - concerns
-          - recommendation
-
-          Rank the strongest opportunities.
-
-          Do not recommend jobs merely because their title
-          matches.
-
-          Use the actual job description.
+          Do not assume that every job is suitable.
 
           ==================================================
-          LEARNING
+          CANDIDATE
           ==================================================
 
-          Review previous decisions and lessons.
+          Target seniority includes:
 
-          Use saved/rejected jobs to improve future
-          recommendations.
+          - Principal Software Engineer
+          - Staff Software Engineer
+          - Software Architect
+          - Principal Engineer
+          - Senior Engineering Manager
+          - Associate Director
+          - Similar senior technical leadership roles
 
-          Update learning state only when justified.
+          Important preferences:
 
-          Never fabricate user feedback.
-
-          ==================================================
-          INTERVIEW PREPARATION
-          ==================================================
-
-          Generate interview preparation based on today's
-          strongest jobs.
-
-          Include:
-
-          - system design questions
-          - architecture questions
-          - technical questions
-          - leadership questions
-          - model answers
-          - skill-gap topics
-
-          ==================================================
-          REPORT
-          ==================================================
-
-          Write the final daily briefing to:
-
-          data/latest_report.md
-
-          Include:
-
-          1. Executive summary
-          2. Top job matches
-          3. New jobs
-          4. Rejected/low-match jobs
-          5. Why the top jobs match
-          6. Skill gaps
-          7. Interview questions
-          8. Model answers
-          9. Search observations
-          10. Decisions requiring user input
-
-          Include direct job URLs from data/jobs.json.
+          - Remote India
+          - Remote-only preferred
+          - Senior technical responsibility
+          - Architecture
+          - Distributed systems
+          - Cloud
+          - Backend engineering
+          - System design
+          - Microservices
+          - API design
+          - Scalability
+          - Technical leadership
 
           ==================================================
           SECURITY
           ==================================================
 
-          Never access anything outside the repository.
+          The execution environment is a temporary
+          GitHub Actions Linux runner.
+
+          Stay inside the repository workspace.
 
           Never access:
 
           - user's Mac
-          - host filesystem
+          - Mac filesystem
+          - host filesystem outside the repository
           - SSH
           - SSH keys
           - Keychain
           - browser passwords
+          - browser credentials
           - Gmail
           - private email
           - private accounts
+          - personal accounts
 
           Never:
 
-          - apply for jobs
-          - contact recruiters
-          - send messages
-          - send emails
+          - apply for a job
+          - submit an application
+          - contact a recruiter
+          - send an external message
           - spend money
-          - modify .github/workflows/*
-
-          External actions require explicit user confirmation.
-
-          Never claim an external action happened unless it
-          actually happened.
+          - purchase anything
+          - create external accounts
+          - modify GitHub workflow files
 
           ==================================================
-          FINAL VALIDATION
+          AUTONOMY BOUNDARY
           ==================================================
 
-          Verify:
+          You may make reasonable internal decisions about:
+
+          - job ranking
+          - relevance scoring
+          - interview preparation
+          - skill-gap identification
+          - search-strategy observations
+          - learning from existing decisions
+
+          Important external actions require user
+          confirmation.
+
+          Do not perform external actions.
+
+          ==================================================
+          ANALYSIS
+          ==================================================
+
+          For each strong job candidate:
+
+          1. Identify the job.
+          2. Provide the direct job URL.
+          3. Assess seniority.
+          4. Assess remote suitability.
+          5. Assess technical alignment.
+          6. Assess leadership alignment.
+          7. Identify important requirements.
+          8. Identify likely skill gaps.
+          9. Explain why the candidate should or should
+             not consider the role.
+          10. Give a practical recommendation.
+
+          ==================================================
+          RANKING
+          ==================================================
+
+          Prioritize:
+
+          1. Strong profile match.
+          2. Principal/Staff/Architect-level scope.
+          3. Senior engineering leadership.
+          4. Remote India.
+          5. Remote-only roles.
+          6. Architecture and distributed systems.
+          7. Cloud/platform/backend engineering.
+          8. System design and scalability.
+          9. Technical leadership.
+
+          Do not recommend a job merely because its title
+          contains "Engineer".
+
+          ==================================================
+          INTERVIEW PREPARATION
+          ==================================================
+
+          Generate useful interview preparation based on
+          the strongest jobs found.
+
+          Include:
+
+          - system-design questions
+          - architecture questions
+          - distributed-systems questions
+          - scalability questions
+          - cloud questions
+          - leadership questions
+          - behavioral questions
+          - role-specific questions
+
+          Provide concise model answers.
+
+          ==================================================
+          SKILL GAPS
+          ==================================================
+
+          Identify recurring requirements that appear in
+          strong jobs but are not clearly represented in
+          the candidate profile.
+
+          Separate:
+
+          - critical gaps
+          - useful gaps
+          - optional skills
+
+          ==================================================
+          LEARNING
+          ==================================================
+
+          Review:
+
+          memory/decisions.json
+          memory/lessons.json
+          memory/rejected_jobs.json
+          memory/saved_jobs.json
+
+          Look for patterns.
+
+          Examples:
+
+          - roles repeatedly rejected
+          - roles repeatedly saved
+          - preferred companies
+          - unwanted locations
+          - unwanted seniority
+          - recurring skill requirements
+
+          Update learning files only when there is enough
+          evidence to justify the change.
+
+          Do not invent user preferences.
+
+          ==================================================
+          REPORT
+          ==================================================
+
+          Save the final career briefing to:
 
           data/latest_report.md
 
-          exists and contains the daily briefing.
+          The report should contain:
 
-          Do not modify:
+          # Daily Career Briefing
 
-          .github/workflows/*
+          ## Top Opportunities
+
+          Ranked strong matches with:
+
+          - Job title
+          - Company
+          - Location
+          - Remote status
+          - Match assessment
+          - Relevance score
+          - Direct job link
+          - Key reasons
+          - Main concerns
+
+          ## Other Interesting Jobs
+
+          Jobs worth considering but with weaker matches.
+
+          ## Skill Gaps
+
+          Important skills appearing across relevant jobs.
+
+          ## Interview Questions
+
+          Questions relevant to the strongest opportunities.
+
+          ## Model Answers
+
+          Strong concise answers for those questions.
+
+          ## Search Strategy
+
+          What the current job market appears to be
+          emphasizing.
+
+          ## Decisions Needed
+
+          List only decisions that genuinely require
+          the user's input.
+
+          ==================================================
+          IMPORTANT
+          ==================================================
+
+          Never claim that a job was applied to.
+
+          Never claim that a recruiter was contacted.
+
+          Never claim that an external action occurred
+          unless it actually occurred.
+
+          Never invent job details.
+
+          If information is missing, say so.
+
+          If there are no suitable jobs, clearly say so.
 
           EOF
 
-      # --------------------------------------------------
-      # VERIFY CAREER PROMPT
-      # --------------------------------------------------
+      # ==================================================
+      # OPENCLAW
+      # ==================================================
 
-      - name: Verify career task
-        run: |
-          test -s "$RUNNER_TEMP/career-task.md"
-          echo "Career analysis task ready."
-
-      # --------------------------------------------------
-      # AGENT 2 — CAREER ANALYSIS
-      # --------------------------------------------------
-      - name: Search jobs
-        run: |
-         python agent/search_jobs.py
-
-      - name: Verify jobs data
-        run: |
-         test -f data/jobs.json
-
-         python - <<'PY'
-         import json
-
-         with open("data/jobs.json", encoding="utf-8") as f:
-         jobs = json.load(f)
-
-         if not isinstance(jobs, list):
-         raise SystemExit("data/jobs.json must be a JSON list")
-
-         print(f"Jobs available: {len(jobs)}")
-         PY
-
-
-
-      - name: Run OpenClaw Career Agent
+      - name: Run OpenClaw
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+
         run: |
           openclaw agent exec \
             --isolated \
@@ -541,33 +433,39 @@ jobs:
             --cwd "$GITHUB_WORKSPACE" \
             --timeout 1200 \
             --json \
-            > "$RUNNER_TEMP/career-result.json"
+            > "$RUNNER_TEMP/openclaw-result.json"
 
-      # --------------------------------------------------
-      # DISPLAY CAREER RESULT
-      # --------------------------------------------------
+      # ==================================================
+      # DISPLAY OPENCLAW RESULT
+      # ==================================================
 
-      - name: Display career result
+      - name: Display OpenClaw result
         if: always()
         run: |
-          if [ -f "$RUNNER_TEMP/career-result.json" ]; then
-            cat "$RUNNER_TEMP/career-result.json"
+          if [ -f "$RUNNER_TEMP/openclaw-result.json" ]; then
+            cat "$RUNNER_TEMP/openclaw-result.json"
+          else
+            echo "No OpenClaw result file was produced."
           fi
 
-      # --------------------------------------------------
+      # ==================================================
       # VERIFY REPORT
-      # --------------------------------------------------
+      # ==================================================
 
       - name: Check generated report
         run: |
           test -f data/latest_report.md
-          test -s data/latest_report.md
 
           echo "Career report generated."
 
-      # --------------------------------------------------
-      # SAVE AGENT STATE
-      # --------------------------------------------------
+          echo "Report preview:"
+          echo "----------------------------------------"
+          head -100 data/latest_report.md
+          echo "----------------------------------------"
+
+      # ==================================================
+      # SAVE STATE
+      # ==================================================
 
       - name: Save agent state
         run: |
