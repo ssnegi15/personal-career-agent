@@ -33,13 +33,20 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Setup Node.js 26
+        uses: actions/setup-node@v5
+        with:
+          node-version: "26"
+          cache: "npm"
+
+      - name: Verify Node.js
+        run: |
+          node --version
+          npm --version
+
       - name: Install OpenClaw
         run: |
-          curl -fsSL \
-            --proto '=https' \
-            --tlsv1.2 \
-            https://openclaw.ai/install.sh \
-            | bash -s -- --no-onboard
+          npm install -g openclaw@latest
 
       - name: Verify OpenClaw
         run: |
