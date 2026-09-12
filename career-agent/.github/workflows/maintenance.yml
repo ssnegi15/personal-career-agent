@@ -1,0 +1,35 @@
+name: Career Agent - Maintenance
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "0 4 * * 0"
+
+permissions:
+  contents: read
+
+jobs:
+
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate Python
+        run: |
+          python -m compileall agent ai jobs
+
+      - name: Verify security policy
+        run: |
+          grep -q "mac_access: false" security/policy.yaml
+          grep -q "automatic_job_application: false" security/policy.yaml
+
+          echo "Security policy OK."

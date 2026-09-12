@@ -1,0 +1,17 @@
+preferences:
+  remote_india: true
+  hybrid: false
+  relocation: false
+
+  minimum_experience_years: 10
+
+  priorities:
+    architecture: high
+    technical_leadership: high
+    full_stack: high
+    distributed_systems: high
+    cloud: high
+
+  application:
+    automatic: false
+    confirmation_required: true
